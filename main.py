@@ -4,6 +4,8 @@ from PIL import Image
 import numpy as np
 import os
 
+np.set_printoptions(suppress=True)
+
 
 class ANN:
     def __init__(self):
@@ -15,7 +17,7 @@ class ANN:
             self.list.append([])
 
     @staticmethod
-    def s(x, deriv=False):
+    def nonlin(x, deriv=False):
         if deriv:
             return x * (1 - x)
         else:
@@ -23,41 +25,41 @@ class ANN:
 
     def train(self, var):
         if var == 0:
-            self.y = np.array([0.9999, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001])
+            self.y = np.array([1., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
         elif var == 1:
-            self.y = np.array([0.0001, 0.9999, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001])
+            self.y = np.array([0., 1., 0., 0., 0., 0., 0., 0., 0., 0.])
         elif var == 2:
-            self.y = np.array([0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001])
+            self.y = np.array([0., 0., 1., 0., 0., 0., 0., 0., 0., 0.])
         elif var == 3:
-            self.y = np.array([0.0001, 0.0001, 0.0001, 0.9999, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001])
+            self.y = np.array([0., 0., 0., 1., 0., 0., 0., 0., 0., 0.])
         elif var == 4:
-            self.y = np.array([0.0001, 0.0001, 0.0001, 0.0001, 0.9999, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001])
+            self.y = np.array([0., 0., 0., 0., 1., 0., 0., 0., 0., 0.])
         elif var == 5:
-            self.y = np.array([0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.9999, 0.0001, 0.0001, 0.0001, 0.0001])
+            self.y = np.array([0., 0., 0., 0., 0., 1., 0., 0., 0., 0.])
         elif var == 6:
-            self.y = np.array([0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.9999, 0.0001, 0.0001, 0.0001])
+            self.y = np.array([0., 0., 0., 0., 0., 0., 1., 0., 0., 0.])
         elif var == 7:
-            self.y = np.array([0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.9999, 0.0001, 0.0001])
+            self.y = np.array([0., 0., 0., 0., 0., 0., 0., 1., 0., 0.])
         elif var == 8:
-            self.y = np.array([0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.9999, 0.0001])
+            self.y = np.array([0., 0., 0., 0., 0., 0., 0., 0., 1., 0.])
         elif var == 9:
-            self.y = np.array([0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.0001, 0.9999])
-        for x in range(20000):
-            l0 = np.asarray(self.list)
-            l1 = self.s(np.dot(l0, self.weights0))
-            l2 = self.s(np.dot(l1, self.weights1))
-            l2_error = self.y - l2
-            l2_delta = l2_error * self.s(l2, deriv=True)
-            l1_error = l2_delta.dot(self.weights1.T)
-            l1_delta = l1_error * self.s(l1, deriv=True)
-            self.weights1 += l1.T.dot(l2_delta)
-            self.weights0 += l0.T.dot(l1_delta)
+            self.y = np.array([0., 0., 0., 0., 0., 0., 0., 0., 0., 1.])
+        for x in range(1000):
+            inputs = np.asarray(self.list)
+            hidden = self.nonlin(np.dot(inputs, self.weights0))
+            outputs = self.nonlin(np.dot(hidden, self.weights1))
+            outputs_error = self.y - outputs
+            outputs_delta = outputs_error * self.nonlin(outputs, deriv=True)
+            hidden_error = outputs_delta.dot(self.weights1.T)
+            hidden_delta = hidden_error * self.nonlin(hidden, deriv=True)
+            self.weights1 += hidden.T.dot(outputs_delta)
+            self.weights0 += inputs.T.dot(hidden_delta)
 
     def test(self, inputs):
-        l0 = inputs
-        l1 = self.s(np.dot(l0, self.weights0))
-        l2 = self.s(np.dot(l1, self.weights1))
-        print(l2)
+        inputs = inputs
+        hidden = self.nonlin(np.dot(inputs, self.weights0))
+        outputs = self.nonlin(np.dot(hidden, self.weights1))
+        print(outputs)
 
 
 ann = ANN()
@@ -149,34 +151,34 @@ for i in tqdm(range(max0+max1+max2+max3+max4+max5+max6+max7+max8+max9)):
         continue
     img = str
     if rand1 == 0:
-        img = dir0+img0[f0]
+        img = dir0 + img0[f0]
         f0 += 1
     elif rand1 == 1:
-        img = dir1+img1[f1]
+        img = dir1 + img1[f1]
         f1 += 1
     elif rand1 == 2:
-        img = dir2+img2[f2]
+        img = dir2 + img2[f2]
         f2 += 1
     elif rand1 == 3:
-        img = dir3+img3[f3]
+        img = dir3 + img3[f3]
         f3 += 1
     elif rand1 == 4:
-        img = dir4+img4[f4]
+        img = dir4 + img4[f4]
         f4 += 1
     elif rand1 == 5:
-        img = dir5+img5[f5]
+        img = dir5 + img5[f5]
         f5 += 1
     elif rand1 == 6:
-        img = dir6+img6[f6]
+        img = dir6 + img6[f6]
         f6 += 1
     elif rand1 == 7:
-        img = dir7+img7[f7]
+        img = dir7 + img7[f7]
         f7 += 1
     elif rand1 == 8:
-        img = dir8+img8[f8]
+        img = dir8 + img8[f8]
         f8 += 1
     elif rand1 == 9:
-        img = dir9+img9[f9]
+        img = dir9 + img9[f9]
         f9 += 1
     img = Image.open(img).convert('L')
     width, height = img.size
@@ -193,11 +195,6 @@ for i in tqdm(range(max0+max1+max2+max3+max4+max5+max6+max7+max8+max9)):
     ann.train(rand1)
     ann.list = [[] for x in range(28)]
 
-file1 = open('/weight1.txt', 'w+')
-file1.write(str(ann.weights0))
-file2 = open('w+/weight2.txt', 'w+')
-file2.write(str(ann.weights1))
-
 while True:
     file = input('Enter file path: ')
     img = Image.open(file).convert('L')
@@ -207,4 +204,10 @@ while True:
         pass
     else:
         img_data = (img_data - np.min(img_data)) / np.ptp(img_data)
+    counter = 0
+    for y in range(len(ann.list)):
+        for a in range(28):
+            ann.list[y].append(img_data[counter])
+            counter += 1
     ann.test(img_data)
+    ann.list = [[] for x in range(28)]
