@@ -55,10 +55,10 @@ class ANN:
             self.weights1 += hidden.T.dot(outputs_delta)
             self.weights0 += inputs.T.dot(hidden_delta)
 
-    def test(self, inputs):
-        inputs = inputs
-        hidden = self.nonlin(np.dot(inputs, self.weights0))
-        outputs = self.nonlin(np.dot(hidden, self.weights1))
+    def test(self):
+        inputs = self.list
+        hidden = self.nonlin(np.dot(inputs, np.load('/weights1.npy')))
+        outputs = self.nonlin(np.dot(hidden, np.load('/weights2.npy')))
         print(outputs)
 
 
@@ -195,6 +195,10 @@ for i in tqdm(range(max0+max1+max2+max3+max4+max5+max6+max7+max8+max9)):
     ann.train(rand1)
     ann.list = [[] for x in range(28)]
 
+os.system('chmod -R 777')
+np.save('/weights1.npy', ann.weights0)
+np.save('/weights2.npy', ann.weights1)
+
 while True:
     file = input('Enter file path: ')
     img = Image.open(file).convert('L')
@@ -209,5 +213,5 @@ while True:
         for a in range(28):
             ann.list[y].append(img_data[counter])
             counter += 1
-    ann.test(img_data)
+    ann.test()
     ann.list = [[] for x in range(28)]
