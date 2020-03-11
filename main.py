@@ -3,11 +3,6 @@ from tqdm import tqdm
 from PIL import Image
 import numpy as np
 import os
-import sys
-
-debug = True
-
-np.set_printoptions(suppress=True, threshold=sys.maxsize)
 
 
 class ANN:
@@ -108,6 +103,7 @@ f9 = 0
 count = 0
 
 train = input('Would you like to train? ')
+
 if train in ['y', 'Y', 'yes', 'Yes', 'true', 'True']:
     for i in tqdm(range(max0+max1+max2+max3+max4+max5+max6+max7+max8+max9)):
         rand1 = randint(0, 9)
