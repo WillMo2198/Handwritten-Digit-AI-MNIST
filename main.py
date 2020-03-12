@@ -47,6 +47,7 @@ class ANN:
             output.flatten()
             output_error = self.y - output
             output_delta = output_error * self.s(output, deriv=True)
+            print(inputs)
             hidden_error = output_delta.dot(self.weights2.T)
             hidden_delta = hidden_error * self.s(hidden, deriv=True)
             self.weights2 += hidden.T.dot(output_delta)
@@ -54,8 +55,8 @@ class ANN:
 
     def test(self, image):
         inputs = image
-        hidden = self.s(np.dot(inputs, np.load('/weights1.npy')))
-        outputs = self.s(np.dot(hidden, np.load('/weights2.npy')))
+        hidden = self.s(np.dot(inputs, np.load('weights1.npy')))
+        outputs = self.s(np.dot(hidden, np.load('weights2.npy')))
         print(np.argmax(outputs))
 
 
